@@ -39,6 +39,7 @@ double x, y;
   ref_w[Y]=y;
   ref_w[2]=0;
   ref_w[3]=1;
+
   construct_wTb(roger->base_position,wTb);
   inverse_homogeneous_xform(wTb,bTw);
   matrix_times_vector(bTw,ref_w,ref_b);
@@ -65,8 +66,7 @@ double x, y;
     alpha_minus                   = atan2(k2_minus,k1);
     theta1_minus                  = atan2(y,x)-alpha_minus ;
     theta1_plus                   = atan2(y,x)-alpha_plus;
-    roger->arm_setpoint[limb][0]  = santiago1
-    theta1_plus;
+    roger->arm_setpoint[limb][0]  = theta1_plus;
     roger->arm_setpoint[limb][1]  = theta2_plus;
     return (TRUE); //solution
   }
