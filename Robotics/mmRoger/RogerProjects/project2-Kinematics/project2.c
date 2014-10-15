@@ -61,11 +61,11 @@ double x, y;
     theta2_minus                  = atan2(s2_minus, c2);
     k1                            = LARM_1+(LARM_2*c2);
     k2_plus                       = LARM_2*s2_plus;
-  k2_minus                        = LARM_2*s2_minus;
+    k2_minus                      = LARM_2*s2_minus;
     alpha_plus                    = atan2(k2_plus,k1);
     alpha_minus                   = atan2(k2_minus,k1);
-    theta1_minus                  = atan2(y,x)-alpha_minus ;
-    theta1_plus                   = atan2(y,x)-alpha_plus;
+    theta1_minus                  = atan2(ref_b[Y],ref_b[X])-alpha_minus ;
+    theta1_plus                   = atan2(ref_b[Y],ref_b[X])-alpha_plus;
     roger->arm_setpoint[limb][0]  = theta1_plus;
     roger->arm_setpoint[limb][1]  = theta2_plus;
     return (TRUE); //solution
@@ -103,14 +103,14 @@ double time;
 
   // check if ball is in view
   // write Observation "obs" = mean and cov in world coordinates
-  //  if (stereo_observation(roger, &obs)) {          // in vision.c
-  //     printf("PROJECT 2: stereo_observation()- x=%6.4lf y=%6.4lf\n",
-  //        obs.pos[X], obs.pos[Y]);
-  //     printf("                  %lf %lf\n", obs.cov[0][0], obs.cov[0][1]);
-  //     printf("                  %lf %lf\n\n",obs.cov[1][0],obs.cov[1][1]);
-  //  }
-  //  else printf("no valid stereo observation!\n");
-}
+   if (stereo_observation(roger, &obs)) {          // in vision.c
+      printf("PROJECT 2: stereo_observation()- x=%6.4lf y=%6.4lf\n",
+         obs.pos[X], obs.pos[Y]);
+      printf("                  %lf %lf\n", obs.cov[0][0], obs.cov[0][1]);
+      printf("                  %lf %lf\n\n",obs.cov[1][0],obs.cov[1][1]);
+   }
+   else printf("no valid stereo observation!\n");
+ }
 
 void project2_reset(roger)
 Robot* roger;
