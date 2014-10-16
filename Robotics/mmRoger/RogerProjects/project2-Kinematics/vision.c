@@ -90,10 +90,10 @@ Observation * obs;
 
 
     // rotate it into world coordinates ... [cov]_w = wRb [cov]_b wRb^T
-    obs->cov[0][0] = JJT[0][0];
-    obs->cov[0][1] = JJT[0][1];
-    obs->cov[1][0] = JJT[1][0];
-    obs->cov[1][1] = JJT[1][1];
+    obs->cov[0][0] = 8*JJT[0][0];
+    obs->cov[0][1] = 8*JJT[0][1];
+    obs->cov[1][0] = 8*JJT[1][0];
+    obs->cov[1][1] = 8*JJT[1][1];
     // and scale it by the SQR of the observation variance
     obs->cov[0][0] *= sqrt(0.000001);
     obs->cov[0][1] *= sqrt(0.000001);
