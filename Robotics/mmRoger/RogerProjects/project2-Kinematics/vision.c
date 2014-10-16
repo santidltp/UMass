@@ -69,6 +69,9 @@ Observation * obs;
 
     obs->pos[X] = ref_w[X];
     obs->pos[Y] = ref_w[Y];
+
+
+
     d=(2* BASELINE)/(sin(gammaR-gammaL)*sin(gammaR-gammaL));
     double JJ[2][2];
     double JJT[2][2];
@@ -92,14 +95,10 @@ Observation * obs;
     obs->cov[1][0] = JJT[1][0];
     obs->cov[1][1] = JJT[1][1];
     // and scale it by the SQR of the observation variance
-    obs->cov[0][0] *= sqrt(0.00001);
-    obs->cov[0][1] *= sqrt(0.00001);
-    obs->cov[1][0] *= sqrt(0.00001);
-    obs->cov[1][1] *= sqrt(0.00001);
-
-
-
-
+    obs->cov[0][0] *= sqrt(0.000001);
+    obs->cov[0][1] *= sqrt(0.000001);
+    obs->cov[1][0] *= sqrt(0.000001);
+    obs->cov[1][1] *= sqrt(0.000001);
 
     return(TRUE);
   }
@@ -125,6 +124,7 @@ double *ur, *ul;
   int checktwo=0,dchecktwo=1;
   nr = nl = 0;
   *ul = *ur = 0.0;
+
 
   /* scan the left and right images and compute the average red pixel */
     for (i=0;i<NPIXELS;++i) {
@@ -165,7 +165,8 @@ double *ur, *ul;
   // return(TRUE);
   //
   // else
-  return(FALSE);
+  if(*ul>0||*ur>0)return (TRUE);
+  else return(FALSE);
 }
 
 /*************************************************************************/

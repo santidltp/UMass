@@ -17,7 +17,7 @@
 #include "modes.h"
 
 void construct_wTb(), inverse_homogeneous_xform(), matrix_times_vector();
-
+double xref,yref,dx,dy, limbo;
 /**********************************************************************/
 /*** PROJECT #2 - INVERSE KINEMATICS: MAP (X,Y) TO (THETA1, THETA2) ***/
 /**********************************************************************/
@@ -35,8 +35,8 @@ double x, y;
   // transform world frame (x,y)_w input into base coordinates (x,y)_b
   // This piece of code has been extracted from porject1.c
 
-  ref_w[X]=x;
-  ref_w[Y]=y;
+xref=  ref_w[X]=x;
+yref=  ref_w[Y]=y;
   ref_w[2]=0;
   ref_w[3]=1;
 
@@ -68,6 +68,8 @@ double x, y;
     theta1_plus                   = atan2(ref_b[Y],ref_b[X])-alpha_plus;
     roger->arm_setpoint[limb][0]  = theta1_plus;
     roger->arm_setpoint[limb][1]  = theta2_plus;
+
+
     return (TRUE); //solution
   }
   else
@@ -77,7 +79,7 @@ double x, y;
   // pick one of the two solutions and write it into the setpoint of the arm
 
   // return TRUE if there was a solution, FALSE if the location is out of reach
-  return(FALSE);
+  //return(FALSE);
 }
 
 /**********************************************************************/
@@ -99,22 +101,26 @@ double time;
 {
   int stereo_observation();
 
-  printf("STEREO OBSERVATION state=%d\n", stereo_observation(roger, &obs));
+ printf("STEREO OBSERVATION state=%d\n", stereo_observation(roger, &obs));
 
   // check if ball is in view
   // write Observation "obs" = mean and cov in world coordinates
-   if (stereo_observation(roger, &obs)) {          // in vision.c
-      printf("PROJECT 2: stereo_observation()- x=%6.4lf y=%6.4lf\n",
-         obs.pos[X], obs.pos[Y]);
-      printf("                  %lf %lf\n", obs.cov[0][0], obs.cov[0][1]);
-      printf("                  %lf %lf\n\n",obs.cov[1][0],obs.cov[1][1]);
-   }
-   else printf("no valid stereo observation!\n");
- }
+ //   if (stereo_observation(roger, &obs)) {          // in vision.c
+ //      printf("PROJECT 2: stereo_observation()- x=%6.4lf y=%6.4lf\n",
+ //         obs.pos[X], obs.pos[Y]);
+ //      printf("                  %lf %lf\n", obs.cov[0][0], obs.cov[0][1]);
+ //      printf("                  %lf %lf\n\n",obs.cov[1][0],obs.cov[1][1]);
+ //   }
+ //   else printf("no valid stereo observation!\n");
+// dx=LARM_1*cos(roger->arm_theta[0][0])+LARM_2*cos(roger->arm_theta[0][0]+roger->arm_theta[0][1]);
+// dy= LARM_1* sin(roger->arm_theta[0][0])+LARM_2*sin(roger->arm_theta[0][0]+roger->arm_theta[0][1]);
+// printf("(%f, %f)\n",time ,yref-dy);
+  }
 
 void project2_reset(roger)
 Robot* roger;
 { }
+
 
 void project2_enter_params()
 {
@@ -125,5 +131,6 @@ void project2_visualize(roger)
 Robot* roger;
 {
   void draw_observation();
+
   draw_observation(obs); /* defined in xrobot.c */
 }
