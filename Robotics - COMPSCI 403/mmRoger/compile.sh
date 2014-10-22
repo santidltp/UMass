@@ -1,8 +1,0 @@
-cd RogerSimulator
-make clean; make
-cp RogerSimulator/lib RogerProjects/lib
-cd ..
-cd RogerProjects
-make clean;make
-./x
-cd ..
