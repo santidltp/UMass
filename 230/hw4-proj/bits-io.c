@@ -197,7 +197,7 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // initialize the number of bits read to 0 and the number of bytes
   // read to 0.
   // 
-  	if(bfile->nbits == -1 && bfile->nbytes == 0){
+  	if(bfile->nbits == -1 && bfile->nbytes == 0){//not right
   		bfile->byte = fgetc(bfile->fp);
   		bfile->nbits   = 0;
   		bfile->nbytes  = 0;
@@ -210,7 +210,7 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // number of bytes read. If fgetc returns EOF you will need to
   // return EOF. 
   //	
-  	if(bfile->nbits == 7) {
+  	if(bfile->nbits == 7) {//not right
   	  int byte = fputc(bfile->byte, bfile->fp);
   	  bfile->nbits = 0;
   	  bfile->nbytes++;
@@ -246,7 +246,7 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // or the last byte). Then shift right by 7 to retrieve the most
   // significant bit. Update the number of bits read and return the
   // bit.
-	int bit;
+	int bit;//not right
 	bfile->byte = (bfile->byte << 1) ;
 	bit = bfile->byte >> 7;
 	bfile->nbits++;
