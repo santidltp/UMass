@@ -195,7 +195,13 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // reading from the BitsIOFile. If it is you need to read a byte in
   // using fgetc and store the byte in `bfile->byte`. Make sure to
   // initialize the number of bits read to 0 and the number of bytes
-  // read to 0. 
+  // read to 0.
+  // 
+  	if(bfile->nbits == -1 && bfile->nbytes == 0){
+  		bfile->byte = fgetc(bfile->fp);
+  		bfile->nbits   = 0;
+  		bfile->nbytes  = 0;
+  	}
   //
   // Next, you need to check to see if you have read in all
   // 7 bits from the byte. If you just read in the first byte, this
@@ -203,6 +209,17 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // next byte, reset the number of bits read to 0, and increment the
   // number of bytes read. If fgetc returns EOF you will need to
   // return EOF. 
+  //	
+  	if(bfile->nbits == 7) {
+  	  int byte = fputc(bfile->byte, bfile->fp);
+  	  bfile->nbits = 0;
+  	  bfile->nbytes++;
+    
+	    if (byte == EOF) {
+		//will return EOF if is EOF.
+	      return EOF;
+	    }   
+	}
   //
   // Next, you need to actually read a bit from the byte buffer. You
   // will first need to check for the special case of reading the last
@@ -217,12 +234,23 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // loop completes you will be ready to start reading meaningful
   // bits.
   //
+	if(bfile->nbits == 0){
+		while((bfile->byte >> 7)==1){
+			bfile->byte = (bfile->byte << 1) ;
+			bfile->nbits++;
+		}
+	}
+  //
   // Lastly, shift the byte buffer left by 1 to shift out the previous
   // bit read (or the 0 bit in the case we are dealing with a new byte
   // or the last byte). Then shift right by 7 to retrieve the most
   // significant bit. Update the number of bits read and return the
   // bit.
-  return EOF;
+	int bit;
+	bfile->byte = (bfile->byte << 1) ;
+	bit = bfile->byte >> 7;
+	bfile->nbits++;
+  return bit;
 }
 
 /**
@@ -245,13 +273,11 @@ int bits_io_write_bit(BitsIOFile *bfile, unsigned char bit) {
       // which is to return EOF:
       return EOF;
     }
-
     // Reset the byte:
     bfile->byte = ~1;
     // Update the number of bytes written:
     bfile->nbytes += 1;
   }
-
   return bit;
 }
 
