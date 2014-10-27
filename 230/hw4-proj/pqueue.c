@@ -118,7 +118,18 @@ TreeNode* pqueue_dequeue(PriorityQueue *pq) {
   // tree node we just dequeued. Next, make the last entry (the one
   // that next how points to NULL) and then decrement next. Finally,
   // return the tree node you assigned to the temporary T.
-  return NULL;
+  //
+	if(is_empty(pq))
+		return NULL;
+	
+	TreeNode *T = pq->queue[0];
+
+	for (int i = 0; i < pq->next; i++)
+		pq->queue[i]=pq->queue[i+1];
+		pq->queue[pq->next] = NULL;
+		pq->next--;
+	
+  return T;
 }
 
 /**
