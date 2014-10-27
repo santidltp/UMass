@@ -92,6 +92,16 @@ void pqueue_enqueue(PriorityQueue *pq, TreeNode* n) {
   // the MAXSIZE. If it is print an error message and call exit with
   // an argument of 1. Otherwise, assign the tree node to the next
   // location in the queue and call sort.
+  //
+	pq->next++;
+	if(pq->next >= MAXSIZE){
+		printf("Error! Maximum size of the priority queue has been exeeded\n");
+		exit(1);
+	}
+	else{
+		pq->queue[pq->next] = n ;
+		sort(pq);
+	}
 }
 
 /**
