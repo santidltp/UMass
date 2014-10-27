@@ -235,7 +235,7 @@ int bits_io_read_bit(BitsIOFile *bfile) {
   // bits.
   //
 	if(bfile->nbits == 0){
-		while((bfile->byte >> 7)==1){
+		while((bfile->byte >> 7) == 1){
 			bfile->byte = (bfile->byte << 1) ;
 			bfile->nbits++;
 		}
