@@ -38,7 +38,7 @@
 // The start and end of the ASCII characters
 #define CHAR_START      0
 #define CHAR_END        127
-#define NUMBER_OF_CHARS (CHAR_END - CHAR_START)
+#define NUMBER_OF_CHARS (CHAR_END - CHAR_START + 1)
 
 /**
  * The Context object is used to pass information between each of the
@@ -70,6 +70,21 @@ static void compute_freq(FILE *fp, Context *ctx) {
   // table by incrementing its frequency and character. It is ok if we
   // assign the same character multiple times to the same Frequency
   // object in the table, as long as we assign it at least once.
+  //
+	for (int i = 0; i < NUMBER_OF_CHARS; ++i){
+		ctx->table[i].v     = 0;
+		ctx->table[i].c     = i + CHAR_START;
+	}
+	int c;
+
+	//iterate trhought the file
+	while((c = getc(fp)) != EOF){
+		//is the char read within the range?
+		if (c >= CHAR_START && c <= CHAR_END )
+		{//if so...
+			ctx->table[c - CHAR_START].v++;
+		}
+	}
 }
 /**
  * (1) TreeNode Creation
@@ -91,6 +106,15 @@ static void create_tree_nodes(Context *ctx) {
   // its left and right children should be NULL. We worry about
   // constructing the tree in phase (3). Lastly, enqueue the new
   // TreeNode in the priority queue.
+  //
+	for (int i = 0; i <= CHAR_END; ++i){
+		if (ctx->table[i].v > 0){
+			TreeNode *new_node = tree_new();
+			new_node->freq.c = ctx->table[i].c;
+			new_node->freq.v = ctx->table[i].v;
+			pqueue_enqueue(ctx->pq,new_node);
+		}
+	}
 }
 
 /**
@@ -113,7 +137,30 @@ static TreeNode *build_tree(Context *ctx) {
   // loop your priority queue will have a single TreeNode object which
   // represents the root of the tree. Dequeue the remaining TreeNode
   // and return it.
-  return NULL;
+  //	
+	//printf("%d\n",pqueue_size(ctx->pq) );
+	while(pqueue_size(ctx->pq) > 1){
+		TreeNode *LEFT;
+		TreeNode *RIGHT;
+		TreeNode *N = tree_new();
+		int sum;
+		N->type=INTERNAL;
+		
+		LEFT  = pqueue_dequeue(ctx->pq);
+		RIGHT = pqueue_dequeue(ctx->pq);
+		sum = LEFT->freq.v + RIGHT->freq.v;
+
+		N->left = LEFT;
+		N->right= RIGHT;
+		N->freq.v = sum;
+		//idk how to do this one...
+		pqueue_enqueue(ctx->pq,N);
+	}
+	TreeNode *root = NULL;
+	if (pqueue_size(ctx->pq) == 1)
+		root = pqueue_dequeue(ctx->pq); 
+	 
+  return root;
 }
 
 /**
