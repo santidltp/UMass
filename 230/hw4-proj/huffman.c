@@ -110,6 +110,7 @@ static void create_tree_nodes(Context *ctx) {
 	for (int i = 0; i <= CHAR_END; ++i){
 		if (ctx->table[i].v > 0){
 			TreeNode *new_node = tree_new();
+			new_node->type = LEAF;
 			new_node->freq.c = ctx->table[i].c;
 			new_node->freq.v = ctx->table[i].v;
 			pqueue_enqueue(ctx->pq,new_node);
@@ -153,12 +154,11 @@ static TreeNode *build_tree(Context *ctx) {
 		N->left = LEFT;
 		N->right= RIGHT;
 		N->freq.v = sum;
-		//idk how to do this one...
+
 		pqueue_enqueue(ctx->pq,N);
+		
 	}
-	TreeNode *root = NULL;
-	if (pqueue_size(ctx->pq) == 1)
-		root = pqueue_dequeue(ctx->pq); 
+	TreeNode *root = pqueue_dequeue(ctx->pq); 
 	 
   return root;
 }

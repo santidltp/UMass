@@ -318,7 +318,7 @@ START_TEST(test_huffman_find)
   ck_assert_msg(etab != NULL, "Encode table should not be NULL.");
 
   char* e_encode = table_bit_encode(etab, 'e');
-  ck_assert_msg(e_encode != NULL, "Problem finding the encoding for 'e'.");
+ ck_assert_msg(e_encode != NULL, "Problem finding the encoding for 'e'.");
 
   char c = huffman_find(t, e_encode);
   ck_assert_int_eq(c, 'e');
