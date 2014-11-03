@@ -138,38 +138,38 @@ double time;
   case 1:                              //  UNKNOWN   - NO_REFERENCE
   case 2:                              //  UNKNOWN   -  TRANSIENT
   case 3:                              //  UNKNOWN   -  CONVERGED
-    // return_state = ...
+    return_state = state;
     // set return values by hand or execute SEARCH()/TRACK() to return them
-    // internal_state[0] = ...
-    // internal_state[1] = ...
+    internal_state[0] = SEARCH();
+    internal_state[1] = TRACK();
     break;
   case 4:                              // NO_REFERENCE -  UNKNOWN
   case 5:                              // NO_REFERENCE - NO_REFERENCE
   case 6:                              // NO_REFERENCE -  TRANSIENT
   case 7:                              // NO_REFERENCE -  CONVERGED
-    // return_state = ...
+    return_state = state;
     // set return values by hand or execute SEARCH()/TRACK() to return them
-    // internal_state[0] = ...
-    // internal_state[1] = ...
+    internal_state[0] = SEARCH();
+    internal_state[1] = TRACK();
     break;
 
   case 8:                              //  TRANSIENT   -  UNKNOWN
   case 9:                              //  TRANSIENT   - NO_REFERENCE
   case 10:                             //  TRANSIENT   -  TRANSIENT
   case 11:                             //  TRANSIENT   -  CONVERGED
-    // return_state = ...
+    return_state = state;
     // set return values by hand or execute SEARCH()/TRACK() to return them
-    // internal_state[0] = ...
-    // internal_state[1] = ...
+    internal_state[0] = SEARCH();
+    internal_state[1] = TRACK();
     break;
   case 12:                             //  CONVERGED   -  UNKNOWN
   case 13:                             //  CONVERGED   - NO_REFERENCE
   case 14:                             //  CONVERGED   -  TRANSIENT
   case 15:                             //  CONVERGED   -  CONVERGED
-    // return_state = ...
+    return_state = state;
     // set return values by hand or execute SEARCH()/TRACK() to return them
-    // internal_state[0] = ...
-    // internal_state[1] = ...
+    internal_state[0] = SEARCH();
+    internal_state[1] = TRACK();
     break;
   default:
     break;
@@ -189,7 +189,7 @@ double time;
 {
   static int state = UNKNOWN;
 
-  printf("SEARCHTRACK state=%d\n", TRACK(roger, time));
+  printf("SEARCHTRACK state=%d\n", SEARCHTRACK(roger, time));
 }
 
 /*************************************************************************/
