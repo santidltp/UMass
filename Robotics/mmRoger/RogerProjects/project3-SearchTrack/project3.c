@@ -91,9 +91,8 @@ double time;
     roger->eyes_setpoint[RIGHT] = error_eye[RIGHT];
     
     // define base setpoints
-    // error_base = ...
-    // roger->base_setpoint[THETA] = ...
-
+    error_base = roger->base_position[THETA]+error_eye[LEFT]+error_eye[RIGHT];
+    roger->base_setpoint[THETA] = error_base;
     // check for CONVERGE
     if ((fabs(error_eye[LEFT]) < 0.1) && (fabs(error_eye[RIGHT]) < 0.1) &&
 	(fabs(error_base) < 0.1)) {
@@ -190,7 +189,7 @@ double time;
 {
   static int state = UNKNOWN;
 
-  printf("SEARCHTRACK state=%d\n", SEARCH(roger, time));
+  printf("SEARCHTRACK state=%d\n", TRACK(roger, time));
 }
 
 /*************************************************************************/
