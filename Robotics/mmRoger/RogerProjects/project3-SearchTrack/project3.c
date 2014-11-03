@@ -18,7 +18,7 @@ void draw_observation();
 
 extern Observation obs;
 
-/* RETURN STATUS FOR ALL ACTIONS:                                */
+/* RETURN STATUS FOR ALL ACTIONS:                              */
 /* 0-"UNKNOWN", 1-"NO_REFERENCE", 2-"TRANSIENT", 3-"CONVERGED" */
 /*************************************************************************/
 /* SEARCH controller -                                                   */
@@ -32,7 +32,6 @@ double time;
   double heading_error_base;
 
   static int return_state = UNKNOWN;
-
   // SAMPLE A NEW REFERENCE HEADING
   if (return_state != TRANSIENT) {
     // sample a new gaze heading from the SEARCH distribution
@@ -47,15 +46,15 @@ double time;
     /* PROJECT3 PART I - complete the code to explore sampled              */
     /*    search_heading using base and eyes                               */
     /***********************************************************************/
-    // heading_error_base = ...
-    // while (heading_error_base > M_PI) heading_error_base -= 2.0 * M_PI;  
-    // while (heading_error_base < -M_PI) heading_error_base += 2.0 * M_PI;
+    heading_error_base = search_heading - roger->base_position[THETA];
+    while (heading_error_base > M_PI) heading_error_base -= 2.0 * M_PI;  
+    while (heading_error_base < -M_PI) heading_error_base += 2.0 * M_PI;
     
     /* define new setpoints for the base and the eyes                      */
-    // roger->base_setpoint[THETA] = ...
-    // roger->eyes_setpoint[LEFT] = ...
-    // roger->eyes_setpoint[RIGHT] = ...
-
+    roger->base_setpoint[THETA] = search_heading;
+    roger->eyes_setpoint[LEFT] = search_heading;
+    roger->eyes_setpoint[RIGHT] = search_heading;
+// printf("%d\n",sample_gaze_direction(&search_heading));
     // check for CONVERGE
     if ( fabs(heading_error_base) < 0.01) return_state = CONVERGED;
 
@@ -88,8 +87,8 @@ double time;
     error_eye[RIGHT] = atan2((ur-63.5), 64.0);
 
     // define eye setpoints
-    // roger->eyes_setpoint[LEFT] = ...
-    // roger->eyes_setpoint[RIGHT] = ...
+    roger->eyes_setpoint[LEFT] = error_eye[LEFT];
+    roger->eyes_setpoint[RIGHT] = error_eye[RIGHT];
     
     // define base setpoints
     // error_base = ...
@@ -191,7 +190,7 @@ double time;
 {
   static int state = UNKNOWN;
 
-  printf("SEARCHTRACK state=%d\n", SEARCHTRACK(roger, time));
+  printf("SEARCHTRACK state=%d\n", SEARCH(roger, time));
 }
 
 /*************************************************************************/
