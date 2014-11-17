@@ -135,8 +135,8 @@ double time;
 }
 
 // initial (bad) gains for base translational controller
-double kp_base_trans = 1.0;
-double kd_base_trans = 100;
+double kp_base_trans = 1000;
+double kd_base_trans = 1;
 /* Base PD controller, Cartesian reference */
 double PDBase_translate(roger, time) 
 Robot * roger;

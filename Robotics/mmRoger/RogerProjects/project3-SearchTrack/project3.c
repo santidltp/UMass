@@ -17,7 +17,7 @@ int stereo_observation();
 void draw_observation();
 
 extern Observation obs;
-
+double cachupe=0;
 /* RETURN STATUS FOR ALL ACTIONS:                              */
 /* 0-"UNKNOWN", 1-"NO_REFERENCE", 2-"TRANSIENT", 3-"CONVERGED" */
 /*************************************************************************/
@@ -54,7 +54,7 @@ double time;
     roger->base_setpoint[THETA] = search_heading;
     roger->eyes_setpoint[LEFT] = search_heading;
     roger->eyes_setpoint[RIGHT] = search_heading;
-// printf("%d\n",sample_gaze_direction(&search_heading));
+   
     // check for CONVERGE
     if ( fabs(heading_error_base) < 0.01) return_state = CONVERGED;
 
@@ -87,12 +87,12 @@ double time;
     error_eye[RIGHT] = atan2((ur-63.5), 64.0);
 
     // define eye setpoints
-    roger->eyes_setpoint[LEFT] = error_eye[LEFT];
-    roger->eyes_setpoint[RIGHT] = error_eye[RIGHT];
+roger->eyes_setpoint[LEFT] = roger->eye_theta[LEFT] + error_eye[LEFT];
+    roger->eyes_setpoint[RIGHT] = roger->eye_theta[RIGHT] + error_eye[RIGHT];
     
     // define base setpoints
-    error_base = roger->base_position[THETA]+error_eye[LEFT]+error_eye[RIGHT];
-    roger->base_setpoint[THETA] = error_base;
+     //error_base = roger->base_position[THETA] +error_eye[LEFT]+error_eye[RIGHT];
+    roger->base_setpoint[THETA] = roger->base_position[THETA]+(roger->eye_theta[LEFT]+roger->eye_theta[RIGHT])/2;
     // check for CONVERGE
     if ((fabs(error_eye[LEFT]) < 0.1) && (fabs(error_eye[RIGHT]) < 0.1) &&
 	(fabs(error_base) < 0.1)) {
@@ -138,7 +138,7 @@ double time;
   case 1:                              //  UNKNOWN   - NO_REFERENCE
   case 2:                              //  UNKNOWN   -  TRANSIENT
   case 3:                              //  UNKNOWN   -  CONVERGED
-    return_state = state;
+    return_state = UNKNOWN;
     // set return values by hand or execute SEARCH()/TRACK() to return them
     internal_state[0] = SEARCH();
     internal_state[1] = TRACK();
@@ -147,7 +147,7 @@ double time;
   case 5:                              // NO_REFERENCE - NO_REFERENCE
   case 6:                              // NO_REFERENCE -  TRANSIENT
   case 7:                              // NO_REFERENCE -  CONVERGED
-    return_state = state;
+    return_state = NO_REFERENCE;
     // set return values by hand or execute SEARCH()/TRACK() to return them
     internal_state[0] = SEARCH();
     internal_state[1] = TRACK();
@@ -157,18 +157,18 @@ double time;
   case 9:                              //  TRANSIENT   - NO_REFERENCE
   case 10:                             //  TRANSIENT   -  TRANSIENT
   case 11:                             //  TRANSIENT   -  CONVERGED
-    return_state = state;
+    return_state = TRANSIENT;
     // set return values by hand or execute SEARCH()/TRACK() to return them
-    internal_state[0] = SEARCH();
+    // internal_state[0] = SEARCH();
     internal_state[1] = TRACK();
     break;
   case 12:                             //  CONVERGED   -  UNKNOWN
   case 13:                             //  CONVERGED   - NO_REFERENCE
   case 14:                             //  CONVERGED   -  TRANSIENT
   case 15:                             //  CONVERGED   -  CONVERGED
-    return_state = state;
+    return_state = CONVERGED;
     // set return values by hand or execute SEARCH()/TRACK() to return them
-    internal_state[0] = SEARCH();
+    // internal_state[0] = SEARCH();
     internal_state[1] = TRACK();
     break;
   default:
@@ -177,6 +177,7 @@ double time;
   /***********************************************************************/
   /* PROJECT3 PART III - END                                             */
   /***********************************************************************/
+   // printf("(%f,%f)\n",time, cachupe );
   return(return_state);
 }
 
@@ -188,8 +189,8 @@ Robot * roger;
 double time;
 {
   static int state = UNKNOWN;
-
-  printf("SEARCHTRACK state=%d\n", SEARCHTRACK(roger, time));
+SEARCHTRACK(roger, time);
+  // printf("SEARCHTRACK state=%d\n", SEARCHTRACK(roger, time));
 }
 
 /*************************************************************************/

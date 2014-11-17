@@ -15,7 +15,7 @@
 /*************************************************************************/
 #include <math.h>
 #include <stdio.h>
-#include "Roger.h"
+#include "roger.h"
 #include "simulate.h"
 #include "control.h"
 #include "modes.h"
@@ -74,9 +74,11 @@ double mat[4][4], in[4], out[4];
 /*************************************************************************/
 
 // initial (bad) gains for the PD controllers for the eyes
-double kp_eye = 1.0; //KP_EYE
-double kd_eye = 1.0; //KD_EYE;
 
+double kp_eye = 4.0; //KP_EYE
+double kd_eye = 0.03577708; //KD_EYE;
+//I_EYE=0.00008
+//B=2*sqrt(k*I_EYE)=0.03577708
 /* PROJECT #1.1 - PD CONTROLLER FOR THE EYES                             */
 /* setpoints are joint angle values in radians for the eyes              */
 void PDController_eyes(roger, time)
@@ -88,14 +90,17 @@ double time;
 
   for (i = 0; i < NEYES; i++) {
     theta_error = roger->eyes_setpoint[i] - roger->eye_theta[i];
-
     //roger->eye_torque[i] = ...
+   roger->eye_torque[i] = kp_eye*theta_error - kd_eye*roger->eye_theta_dot[i] ;
+//if(i==0)
+   //   printf("(%f, %f)\n", time,  theta_error);
+
   }
 }
 
 // initial (bad) gains for the PD controllers for the arms 
-double kp_arm = 1;
-double kd_arm = 1;
+double kp_arm = 400;
+double kd_arm =  20  ;
 
 /* PROJECT #1.2 - PD CONTROLLER FOR THE ARMS                             */
 /* setpoints - joint angles in radians for the shoulders and elbows      */
@@ -110,7 +115,7 @@ double time;
     // PDcontrol - desired accelerations
     theta_error[0] = roger->arm_setpoint[i][0] - roger->arm_theta[i][0];
     theta_error[1] = roger->arm_setpoint[i][1] - roger->arm_theta[i][1];
-
+   
     //shoulder - bound error -pi < error < +pi
     while (theta_error[0] > M_PI) theta_error[0] -= 2.0 * M_PI;
     while (theta_error[0] < -M_PI) theta_error[0] += 2.0 * M_PI;
@@ -122,39 +127,52 @@ double time;
     // "Enter Params" button
 
     //roger->arm_torque[i][0] = ...
+    roger->arm_torque[i][0] = kp_arm*(theta_error[0])-kd_arm*(roger->arm_theta_dot[i][0]);
+   // if(i==0)printf("(%f, %f)\n",time, theta_error[0] );
     //roger->arm_torque[i][1] = ...
+    roger->arm_torque[i][1] = kp_arm*(theta_error[1])-kd_arm*(roger->arm_theta_dot[i][1]); 
   }
 }
 
 // initial (bad) gains for base translational controller
-double kp_base_trans = 1.0;
-double kd_base_trans = 1.0;
-
+double kp_base_trans = 1000;
+double kd_base_trans = 10;
 /* Base PD controller, Cartesian reference */
 double PDBase_translate(roger, time) 
 Robot * roger;
 double time;
 { 
-  double Fx;
+  double Fx, translational_error, translational_velocity, base_error[2];
+//roger->base_setpoint[Y]=0.5;
 
-  //Fx = ...
+//rx
+  base_error[X]=roger->base_setpoint[X] - roger->base_position[X];
+  //ry
+  base_error[Y]=roger->base_setpoint[Y] - roger->base_position[Y];
+
+  translational_error= base_error[X]*cos(roger->base_position[THETA])+base_error[Y]*sin(roger->base_position[THETA]);
+  translational_velocity = base_error[X]*cos(roger->base_velocity[THETA])+base_error[Y]*sin(roger->base_velocity[THETA]);
+  
+
+  Fx = kp_base_trans*translational_error- kd_base_trans*translational_error;
   
   return(Fx);
 }
 
 // initial (bad) gains for base rotational controller
-double kp_base_rot = 1.0;   //KP_BASE
-double kd_base_rot = 1.0;   //KD_BASE
+double kp_base_rot = 1000.0;   //KP_BASE
+double kd_base_rot = 10;   //KD_BASE
 
 /* Base PD controller, Cartesian reference */
 double PDBase_rotate(roger, time) 
 Robot * roger;
 double time;
 {
-  double Mz;
+  double Mz, theta_error;
+ 
+  theta_error=roger->base_setpoint[THETA] - roger->base_position[THETA];
 
-  //Mz = ...
-
+  Mz = kp_base_rot*(theta_error)-kd_base_rot*roger->base_velocity[THETA];
   return(Mz);
 }
 
@@ -172,10 +190,11 @@ double time;
 
   Fx = PDBase_translate(roger,time);
   Mz = PDBase_rotate(roger,time);
-
+//
   // integrated wheel torque control
-  //roger->wheel_torque[LEFT] = ...;
-  //roger->wheel_torque[RIGHT] =...
+  roger->wheel_torque[LEFT] = 0.5*Fx-(Mz/(2*R_AXLE) );
+
+  roger->wheel_torque[RIGHT] =0.5*Fx+(Mz/(2*R_AXLE));
 }
 
 /*************************************************************************/
@@ -209,7 +228,7 @@ void project1_enter_params()
 
   printf("ARM: K=%6.4lf  B=%6.4lf\n", kp_arm, kd_arm);
   printf("ARM: enter 'K B'\n"); fflush(stdout);
-  scanf("%lf %lf", &kp_arm, &kd_arm);
+  scanf("%lf %lf", &kp_base_trans, &kd_base_trans);
 }
 
 /*************************************************************************/
