@@ -20,7 +20,13 @@ double time;
 /************************************************************************/
 void project7_reset(roger)
 Robot* roger;
-{ }
+{ 
+	roger->arm_setpoint[LEFT][0]=2.827433;
+	roger->arm_setpoint[LEFT][1]=-2.827433;
+	roger->arm_setpoint[RIGHT][0]=-2.827433;
+	roger->arm_setpoint[RIGHT][1]=2.827433;
+
+}
 
 // prompt for and read user customized input values
 void project7_enter_params() 

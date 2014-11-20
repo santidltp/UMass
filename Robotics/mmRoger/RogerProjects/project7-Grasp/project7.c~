@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "Xkw/Xkw.h"
-#include "Roger.h"
+#include "roger.h"
 #include "simulate.h"
 #include "control.h"
 #include "modes.h"

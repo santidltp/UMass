@@ -135,8 +135,8 @@ double time;
 }
 
 // initial (bad) gains for base translational controller
-double kp_base_trans = 1000.0;
-double kd_base_trans = 10;
+double kp_base_trans = 350.0;
+double kd_base_trans = 41.5;
 /* Base PD controller, Cartesian reference */
 double PDBase_translate(roger, time) 
 Robot * roger;
@@ -151,17 +151,17 @@ double time;
   base_error[Y]=roger->base_setpoint[Y] - roger->base_position[Y];
 
   translational_error= base_error[X]*cos(roger->base_position[THETA])+base_error[Y]*sin(roger->base_position[THETA]);
-  translational_velocity = base_error[X]*cos(roger->base_velocity[THETA])+base_error[Y]*sin(roger->base_velocity[THETA]);
+  translational_velocity = roger->base_velocity[X]*cos(roger->base_position[THETA])+roger->base_velocity[Y]*sin(roger->base_position[THETA]);
   
 
-  Fx = kp_base_trans*translational_error- kd_base_trans*translational_error;
+  Fx = kp_base_trans*translational_error- kd_base_trans*translational_velocity;
   
   return(Fx);
 }
 
 // initial (bad) gains for base rotational controller
-double kp_base_rot = 1000.0;   //KP_BASE
-double kd_base_rot = 10;   //KD_BASE
+double kp_base_rot = 310.0;   //KP_BASE
+double kd_base_rot = 5.7;   //KD_BASE
 
 /* Base PD controller, Cartesian reference */
 double PDBase_rotate(roger, time) 

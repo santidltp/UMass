@@ -55,19 +55,25 @@ yref=  ref_w[Y]=y;
 
 
   if(-1<=c2 && c2<=1){
-    s2_plus                       = pow((1-pow(c2,2)),0.5);
-    s2_minus                      = -pow((1-pow(c2,2)),0.5);
-    theta2_plus                   = atan2(s2_plus,c2);
-    theta2_minus                  = atan2(s2_minus, c2);
-    k1                            = LARM_1+(LARM_2*c2);
-    k2_plus                       = LARM_2*s2_plus;
-    k2_minus                      = LARM_2*s2_minus;
-    alpha_plus                    = atan2(k2_plus,k1);
-    alpha_minus                   = atan2(k2_minus,k1);
-    theta1_minus                  = atan2(ref_b[Y],ref_b[X])-alpha_minus ;
-    theta1_plus                   = atan2(ref_b[Y],ref_b[X])-alpha_plus;
-    roger->arm_setpoint[limb][0]  = theta1_plus;
-    roger->arm_setpoint[limb][1]  = theta2_plus;
+    s2_plus                         = pow((1-pow(c2,2)),0.5);
+    s2_minus                        = -pow((1-pow(c2,2)),0.5);
+    theta2_plus                     = atan2(s2_plus,c2);
+    theta2_minus                    = atan2(s2_minus, c2);
+    k1                              = LARM_1+(LARM_2*c2);
+    k2_plus                         = LARM_2*s2_plus;
+    k2_minus                        = LARM_2*s2_minus;
+    alpha_plus                      = atan2(k2_plus,k1);
+    alpha_minus                     = atan2(k2_minus,k1);
+    theta1_minus                    = atan2(ref_b[Y],ref_b[X])-alpha_minus ;
+    theta1_plus                     = atan2(ref_b[Y],ref_b[X])-alpha_plus;
+    if(limb == RIGHT){
+      roger->arm_setpoint[limb][0]  = theta1_plus;
+      roger->arm_setpoint[limb][1]  = theta2_plus;
+    }
+    else{
+     roger->arm_setpoint[limb][0]   = theta1_minus;
+      roger->arm_setpoint[limb][1]  = theta2_minus; 
+    }
 
 
     return (TRUE); //solution

@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 #include "Xkw/Xkw.h"
-#include "Roger.h"
+#include "roger.h"
 #include "simulate.h"
 #include "control.h"
 #include "modes.h"
@@ -15,7 +15,33 @@
 void project6_control(roger, time)
 Robot* roger;
 double time;
-{ }
+{ 
+if(time==0.0){
+	roger->arm_setpoint[LEFT][0]=1.439897;
+	roger->arm_setpoint[LEFT][1]=-2.617994;
+	roger->arm_setpoint[RIGHT][0]=-1.439897;
+	roger->arm_setpoint[RIGHT][1]=2.617994;
+}
+
+ if(time > 0.200000 && time < 0.400000){
+printf("heel\n");
+	roger->arm_setpoint[LEFT][0]=2.827433;
+	roger->arm_setpoint[LEFT][1]=-2.827433;
+	roger->arm_setpoint[RIGHT][0]=-2.827433;
+	roger->arm_setpoint[RIGHT][1]=2.827433;
+}
+
+ if(time > 0.400000 && time < 0.600000){
+printf("heel\n");
+	roger->arm_setpoint[LEFT][0]=0.75;
+	roger->arm_setpoint[LEFT][1]=-1.5;
+	roger->arm_setpoint[RIGHT][0]=-0.75;
+	roger->arm_setpoint[RIGHT][1]=1.5;
+}
+
+	printf("%f\n",time);
+
+}
 
 /************************************************************************/
 void project6_reset(roger)

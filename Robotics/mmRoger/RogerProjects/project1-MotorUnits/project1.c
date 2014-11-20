@@ -99,7 +99,7 @@ double time;
 }
 
 // initial (bad) gains for the PD controllers for the arms 
-double kp_arm = 400;
+double kp_arm = 4000;
 double kd_arm =  20  ;
 
 /* PROJECT #1.2 - PD CONTROLLER FOR THE ARMS                             */
