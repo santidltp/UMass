@@ -57,6 +57,53 @@ int atm(int bank_out_fd, int atm_in_fd, int atm_id, byte cmd[]) {
   // TODO:
   // START YOUR IMPLEMENTATION
 
+	/*
+	 *	Task 1: First, you must check to make sure that the 
+	 *	ID in the unpacked command is the same as this ATMs ID.
+	 *	If it is not the same ATM ID then you must return 
+	 *	the ERR_UNKNOWN_ATM error code. This will be used by 
+	 *	the atm_run function to skip over that trace command 
+	 *	as it is not to be processed by this ATM.
+	 */
+	 if(atm_id != i){ 
+	 	return ERR_UNKNOWN_ATM;
+	 }
+
+	 /*
+	  * Task 2: Next, you need to handle the logic for each of 
+	  * the commands: CONNECT, EXIT, DEPOSIT, WITHDRAW, TRANSFER, 
+	  * and BALANCE. Each of these commands perform the same functionality.
+      */
+      if (cmd == CONNECT || cmd == EXIT || cmd == DEPOSIT || cmd == WITHDRAW 
+        || cmd == TRANSFER || cmd == BALANCE){
+        status = write(atm_out_fd, cmd, MESSAGE_SIZE);
+       if(check_pipe_write(status) != SUCCESS)  return check_pipe_write(status);
+      }
+     
+
+      /*
+       * After you write the command to the bank and it is successful
+       * you must then read the response from the bank using the read 
+       * system call into the empty atmcmd command buffer.
+       */
+         status = read(atm_in_fd, cmd, MESSAGE_SIZE);
+  
+       if(check_pipe_read(status) != SUCCESS) return check_pipe_read(status);
+       else cmd_unpack( cmd, &c, &i,  &f,  &t,  &a);
+       printf("%d\n",cmd );
+     
+       if(cmd == OK)
+        status = SUCCESS;
+       else if(cmd == NOFUNDS)
+        status = ERR_NOFUNDS;
+       else if(cmd == ACCUNKN)
+        status = ERR_UNKNOWN_ACCOUNT;
+       else {
+        error_msg(ERR_UNKNOWN_CMD, "The command you tried to use does not exist, please try again!");
+        status = ERR_UNKNOWN_CMD;
+       }
+
+
   // END YOUR IMPLEMENTATION
 
   return status;
