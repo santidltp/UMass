@@ -36,10 +36,38 @@ int main(int argc, char *argv[]) {
 
   // TODO: ATM PROCESS FORKING
   // START YOUR IMPLEMENTATION
+  int pid=0;
+  for (int i = 0; i <= atm_count-1; ++i){
+	  int atmfd[2];
+	  pipe(atmfd);
+  	  atm_out_fd[i] = atmfd[1];
+  	   pid = fork();
+  	   if (pid == 0){//child
+  	   	close(atmfd[1]);
+  	   	close(bankfd[0]);
+  	   
+  	 result = atm_run(argv[0],  atm_out_fd[i], atmfd[1], i);//insecure
+  	 if(result != SUCCESS) {
+  	 	 error_print();
+  	 	 exit(0);
+  	 }
+  	 close(atmfd[1]);
 
+  	}
+  }
   // END YOUR IMPLEMENTATION
-
-
+   pid = fork();
+   if(pid == 0){//child proccess
+	close(bankfd[1]);
+	bank_open(atm_count, account_count);
+	result = run_bank(bankfd[0],atm_out_fd);
+	if(result != SUCCESS) {
+		error_print();
+		bank_dump();
+		bank_close();
+		exit(0);
+	}
+   }
   // TODO: BANK PROCESS FORKING
   // START YOUR IMPLEMENTATION
 

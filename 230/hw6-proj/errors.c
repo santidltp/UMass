@@ -6,7 +6,7 @@
 // the error codes.
 char *error_strings[] = {
   "SUCCESS",
-  "ERR_UKNOWN_CMD",
+  "ERR_UNKNOWN_CMD",
   "ERR_PIPE_READ_ERR",
   "ERR_PIPE_WRITE_ERR",
   "ERR_UNKNOWN_ACCOUNT",

@@ -109,8 +109,103 @@ int bank(int atm_out_fd[], byte cmd[], int *atm_cnt) {
   cmd_unpack(cmd, &c, &i, &f, &t, &a);
   int result = SUCCESS;
 
+
   // TODO:
   // START YOUR IMPLEMENTATION
+  result = check_valid_atm(i);
+  if (result != SUCCESS) return ERR_UNKNOWN_ATM;
+ 
+  switch(c){
+
+  	case CONNECT : 
+  	MSG_OK(cmd,0,f,t,a);
+  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	 if(check_pipe_write(result) != SUCCESS) 
+  	  	result = check_pipe_write(result);
+
+  	break;
+
+    case EXIT : 
+    	 atm_cnt--;
+    	 MSG_OK(cmd,0,f,t,a);
+    	   	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	 if(check_pipe_write(result) != SUCCESS) 
+  	  	result = check_pipe_write(result);
+    break;
+
+    case DEPOSIT : 
+    //check whether the account exist or not
+    	result = check_valid_account(t);
+    	if(result != SUCCESS) 
+    			MSG_ACCUNKN(cmd,i,t);
+    	else {
+    			accounts[t] += a;
+    	  		MSG_OK(cmd,0,f,t,a);
+    	  	 }
+  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	 if(check_pipe_write(result) != SUCCESS) 
+  	  	result = check_pipe_write(result);
+    break;
+
+  	case WITHDRAW : 
+
+    	result = check_valid_account(f);
+    	if(result != SUCCESS && accounts[f] < a){
+	    	if(result != SUCCESS) 
+	    			MSG_ACCUNKN(cmd,i,t);
+	    	if(accounts[f] < a) 
+	    			MSG_NOFUNDS(cmd,i,f,a)	;
+	    		 	accounts[f] += a;
+    	}  	
+    	else
+    	  	MSG_OK(cmd,0,f,t,a);
+    	
+  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	 if(check_pipe_write(result) != SUCCESS) 
+  	  	result = check_pipe_write(result);
+
+  	break;
+
+    case TRANSFER : 
+    //check account "To"
+        	result = check_valid_account(t);
+    	if(result != SUCCESS) 
+    			MSG_ACCUNKN(cmd,i,t);
+    //check account "From"
+    	result = check_valid_account(f);
+    	if(result != SUCCESS) 
+    			MSG_ACCUNKN(cmd,i,t);
+    //check available amount
+    		if(accounts[f] < a) 
+    			MSG_NOFUNDS(cmd,i,f,a)	;
+			else 
+				MSG_OK(cmd,0,f,t,a);
+
+			accounts[f] -= a;
+			accounts[t] += a;
+
+		  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	 if(check_pipe_write(result) != SUCCESS) 
+  	  	result = check_pipe_write(result);	
+
+
+    break;
+
+    case BALANCE : 
+    	result = check_valid_account(f);
+    	if(result != SUCCESS) 
+    			MSG_ACCUNKN(cmd,i,f);
+    	else	MSG_OK(cmd,0,f,t,a);
+  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	 if(check_pipe_write(result) != SUCCESS) 
+  	  	result = check_pipe_write(result);
+
+    break;
+  //  default:
+    default:
+     error_msg(ERR_UNKNOWN_CMD, "The command you tried to use does not exist, please try again!");
+     result = ERR_UNKNOWN_CMD;
+  }
 
   // END YOUR IMPLEMENTATION
 

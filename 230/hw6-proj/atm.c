@@ -74,35 +74,40 @@ int atm(int bank_out_fd, int atm_in_fd, int atm_id, byte cmd[]) {
 	  * the commands: CONNECT, EXIT, DEPOSIT, WITHDRAW, TRANSFER, 
 	  * and BALANCE. Each of these commands perform the same functionality.
       */
-      if (cmd == CONNECT || cmd == EXIT || cmd == DEPOSIT || cmd == WITHDRAW 
-        || cmd == TRANSFER || cmd == BALANCE){
-        status = write(atm_out_fd, cmd, MESSAGE_SIZE);
+      if (c == CONNECT || c == EXIT || c == DEPOSIT || c == WITHDRAW 
+        || c == TRANSFER || c == BALANCE){
+        status = write(bank_out_fd, cmd, MESSAGE_SIZE);
        if(check_pipe_write(status) != SUCCESS)  return check_pipe_write(status);
-      }
-     
+      
 
       /*
        * After you write the command to the bank and it is successful
        * you must then read the response from the bank using the read 
        * system call into the empty atmcmd command buffer.
        */
-         status = read(atm_in_fd, cmd, MESSAGE_SIZE);
+         status = read(atm_in_fd, atmcmd, MESSAGE_SIZE);
   
        if(check_pipe_read(status) != SUCCESS) return check_pipe_read(status);
-       else cmd_unpack( cmd, &c, &i,  &f,  &t,  &a);
-       printf("%d\n",cmd );
+      
+        cmd_unpack( cmd, &c, &i,  &f,  &t,  &a);
+      
      
-       if(cmd == OK)
+       if(c == OK)
         status = SUCCESS;
-       else if(cmd == NOFUNDS)
+       else if(c == NOFUNDS)
         status = ERR_NOFUNDS;
-       else if(cmd == ACCUNKN)
+       else if(c == ACCUNKN)
         status = ERR_UNKNOWN_ACCOUNT;
        else {
         error_msg(ERR_UNKNOWN_CMD, "The command you tried to use does not exist, please try again!");
         status = ERR_UNKNOWN_CMD;
        }
+       }       else {
+        error_msg(ERR_UNKNOWN_CMD, "The command you tried to use does not exist, please try again!");
+        status = ERR_UNKNOWN_CMD;
+       }
 
+   
 
   // END YOUR IMPLEMENTATION
 
