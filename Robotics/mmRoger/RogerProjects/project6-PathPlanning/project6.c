@@ -12,34 +12,18 @@
 #include "control.h"
 #include "modes.h"
 
+double Xinitial = 0;
+	double Xfinal   = 0;
+	double initialTime=0;
+	double finalTime=0;
+	double speed=0;
+	double balltime=0;
+
 void project6_control(roger, time)
 Robot* roger;
 double time;
 { 
-if(time==0.0){
-	roger->arm_setpoint[LEFT][0]=1.439897;
-	roger->arm_setpoint[LEFT][1]=-2.617994;
-	roger->arm_setpoint[RIGHT][0]=-1.439897;
-	roger->arm_setpoint[RIGHT][1]=2.617994;
-}
-
- if(time > 0.200000 && time < 0.400000){
-printf("heel\n");
-	roger->arm_setpoint[LEFT][0]=2.827433;
-	roger->arm_setpoint[LEFT][1]=-2.827433;
-	roger->arm_setpoint[RIGHT][0]=-2.827433;
-	roger->arm_setpoint[RIGHT][1]=2.827433;
-}
-
- if(time > 0.400000 && time < 0.600000){
-printf("heel\n");
-	roger->arm_setpoint[LEFT][0]=0.75;
-	roger->arm_setpoint[LEFT][1]=-2;
-	roger->arm_setpoint[RIGHT][0]=-0.75;
-	roger->arm_setpoint[RIGHT][1]=2;
-}
-
-	printf("%f\n",time);
+game(roger, time);
 
 }
 
@@ -58,3 +42,91 @@ void project6_enter_params()
 void project6_visualize(roger)
 Robot* roger;
 { }
+
+
+void game(roger, time)
+Robot *roger;
+double time;
+{
+
+Observation ball;
+// TRACK();
+
+
+// 	if(stereo_observationWithRespect(roger, &ball)){
+// 		//ballSpeed(ball,time);
+// 	//	isBallTrapped(roger,ball,time);
+// 		if(ball.pos[X] < 0.4){
+// 			armsTrapBallClose(roger);
+// 		// 	if(isBallTrapped(roger,ball,time))
+// 		// 		armsTrapBallOpen(roger);
+// 		// }
+// 		else{
+// 				armsTrapBallOpen(roger);			
+// 			}
+    
+
+
+
+
+
+// }
+// else{
+// 	armsTrapBallOpen(roger);
+
+// }
+
+
+
+
+
+}
+void armsTrapBallOpen(roger)
+Robot *roger;
+{
+	roger->arm_setpoint[LEFT][0]	=   1.526108;
+	roger->arm_setpoint[LEFT][1]	=  -2.143611;
+	roger->arm_setpoint[RIGHT][0]	=  -1.526108;
+	roger->arm_setpoint[RIGHT][1]	=	2.143611;
+}
+void armsTrapBallClose(roger)
+Robot *roger;
+{
+	roger->arm_setpoint[LEFT][0]	=   1.310810;
+	roger->arm_setpoint[LEFT][1]	=  -2.400305;
+	roger->arm_setpoint[RIGHT][0]	=  -1.182136;
+	roger->arm_setpoint[RIGHT][1]	=	2.228120;
+}
+
+
+
+
+
+void ballSpeed(Observation ball, double time){
+if(initialTime == 0){
+ 	initialTime=time;
+ 	Xinitial = ball.pos[X];
+ 	// printf("initial time:%f\n", initialTime);
+ }
+ else if(time >= (initialTime+ 0.01)){
+ 	Xfinal = ball.pos[X];
+ 	finalTime=time;
+ 	speed = (Xinitial-Xfinal)/(initialTime-finalTime);
+ 	initialTime =0;
+ 	printf("speeeeeeed: %f\t time: %f\n",speed,time ); 
+ 	// return speed;
+ }
+
+// return 0;
+}
+
+int isBallTrapped(Robot *roger, Observation ball, double time){
+
+
+	if(ball.pos[X] < 0.26){
+		
+		return 1;
+	}
+
+	return 0;
+}
