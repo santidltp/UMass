@@ -118,33 +118,33 @@ int bank(int atm_out_fd[], byte cmd[], int *atm_cnt) {
   switch(c){
 
   	case CONNECT : 
-  	MSG_OK(cmd,0,f,t,a);
-  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	MSG_OK(bankcmd,0,f,t,a);
+  	result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
   	 if(check_pipe_write(result) != SUCCESS) 
-  	  	result = check_pipe_write(result);
+  	  	 return check_pipe_write(result);
 
   	break;
 
     case EXIT : 
     	 atm_cnt--;
-    	 MSG_OK(cmd,0,f,t,a);
-    	   	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+    	 MSG_OK(bankcmd,0,f,t,a);
+    	   	result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
   	 if(check_pipe_write(result) != SUCCESS) 
-  	  	result = check_pipe_write(result);
+  	  	 return check_pipe_write(result);
     break;
 
     case DEPOSIT : 
     //check whether the account exist or not
     	result = check_valid_account(t);
     	if(result != SUCCESS) 
-    			MSG_ACCUNKN(cmd,i,t);
+    			MSG_ACCUNKN(bankcmd,i,t);
     	else {
     			accounts[t] += a;
-    	  		MSG_OK(cmd,0,f,t,a);
+    	  		MSG_OK(bankcmd,0,f,t,a);
     	  	 }
-  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
   	 if(check_pipe_write(result) != SUCCESS) 
-  	  	result = check_pipe_write(result);
+  	  	 return check_pipe_write(result);
     break;
 
   	case WITHDRAW : 
@@ -152,17 +152,17 @@ int bank(int atm_out_fd[], byte cmd[], int *atm_cnt) {
     	result = check_valid_account(f);
     	if(result != SUCCESS && accounts[f] < a){
 	    	if(result != SUCCESS) 
-	    			MSG_ACCUNKN(cmd,i,t);
+	    			MSG_ACCUNKN(bankcmd,i,t);
 	    	if(accounts[f] < a) 
-	    			MSG_NOFUNDS(cmd,i,f,a)	;
+	    			MSG_NOFUNDS(bankcmd,i,f,a)	;
 	    		 	accounts[f] += a;
     	}  	
     	else
-    	  	MSG_OK(cmd,0,f,t,a);
+    	  	MSG_OK(bankcmd,0,f,t,a);
     	
-  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+  	result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
   	 if(check_pipe_write(result) != SUCCESS) 
-  	  	result = check_pipe_write(result);
+  	  	 return check_pipe_write(result);
 
   	break;
 
@@ -170,36 +170,43 @@ int bank(int atm_out_fd[], byte cmd[], int *atm_cnt) {
     //check account "To"
         	result = check_valid_account(t);
     	if(result != SUCCESS) 
-    			MSG_ACCUNKN(cmd,i,t);
+    			MSG_ACCUNKN(bankcmd,i,t);
     //check account "From"
     	result = check_valid_account(f);
     	if(result != SUCCESS) 
-    			MSG_ACCUNKN(cmd,i,t);
+    			MSG_ACCUNKN(bankcmd,i,t);
     //check available amount
     		if(accounts[f] < a) 
-    			MSG_NOFUNDS(cmd,i,f,a)	;
+    			MSG_NOFUNDS(bankcmd,i,f,a)	;
 			else 
-				MSG_OK(cmd,0,f,t,a);
+				MSG_OK(bankcmd,0,f,t,a);
 
 			accounts[f] -= a;
 			accounts[t] += a;
 
-		  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
+		  	result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
   	 if(check_pipe_write(result) != SUCCESS) 
-  	  	result = check_pipe_write(result);	
+  	  	  return check_pipe_write(result);	
 
 
     break;
 
     case BALANCE : 
     	result = check_valid_account(f);
-    	if(result != SUCCESS) 
-    			MSG_ACCUNKN(cmd,i,f);
-    	else	MSG_OK(cmd,0,f,t,a);
-  	result = write(atm_out_fd[i], cmd, MESSAGE_SIZE);
-  	 if(check_pipe_write(result) != SUCCESS) 
-  	  	result = check_pipe_write(result);
-
+    	if(result != SUCCESS) {
+			MSG_ACCUNKN(bankcmd,i,f);
+			result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
+			if(check_pipe_write(result) != SUCCESS) 
+				return check_pipe_write(result);
+  	  	}
+    	else{	
+    		a = accounts[f];
+			MSG_OK(bankcmd,0,f,t,a);
+ 
+			result = write(atm_out_fd[i], bankcmd, MESSAGE_SIZE);
+			if(check_pipe_write(result) != SUCCESS) 
+  	 			return check_pipe_write(result);
+		}
     break;
   //  default:
     default:
@@ -209,7 +216,7 @@ int bank(int atm_out_fd[], byte cmd[], int *atm_cnt) {
 
   // END YOUR IMPLEMENTATION
 
-  return result;
+  return check_pipe_write(result);
 }
 
 int run_bank(int bank_in_fd, int atm_out_fd[]) {
